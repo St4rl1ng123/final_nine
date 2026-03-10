@@ -3,70 +3,70 @@ package main
 // Пишите тесты в этом файле
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateRandomElements(t *testing.T) {
-	// проверка генерации с положительным числом
-	size := 10
-	data := generateRandomElements(size)
-
-	if len(data) != size {
-		t.Errorf("Error!") // вывод ошибки
+	// Таблица тестовых случаев
+	testCases := []struct {
+		name           string // имя теста
+		size           int    // входной размер слайса
+		expectedLength int    // ожидаемая длина результата
+		checkValues    bool   // проверка диапозона значений
+	}{
+		{"положительный размер (10)", 10, 10, true},
+		{"нулевой размер 0", 0, 0, false},
+		{"отрицательный размер (-5)", -5, 0, false},
 	}
 
-	// все элементы - целые числа?
-	for _, val := range data {
-		if val < 0 || val > 999999 {
-			t.Errorf("Error!")
-		}
-	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// создаём локальный объект утверждений
+			assert := assert.New(t)
 
-	// размер слайса равен нулю?
-	emptyData := generateRandomElements(0)
-	if len(emptyData) != 0 {
-		t.Errorf("Error!") // вывод ошибки
-	}
+			// генерируем данные
+			data := generateRandomElements(tc.size)
 
-	// проверка крайнего случая - отрицательный размер слайса
-	negativeData := generateRandomElements(-5)
-	if len(negativeData) != 0 {
-		t.Errorf("Error!")
+			// проверяем длину слайса
+			assert.Equal(tc.expectedLength, len(data), "Длина слайса не совпадает с ожидаемой")
+
+			// проверяем диапозон значений
+			if tc.checkValues {
+				for _, val := range data {
+					assert.True(val >= 0 && val <= 100000000, "Значения выходят за границы")
+				}
+			}
+		})
 	}
 }
 
 func TestMaximum(t *testing.T) {
-	// несколько элементов
-	testData1 := []int{2, 7, 4, 5, 9}
-	max := maximum(testData1)
-	if max != 9 {
-		t.Errorf("ожидаемый максимум %d неверный", max)
+	// Таблица тестовых случаев
+	testCases := []struct {
+		name        string // имя теста
+		testData    []int  // входные данные
+		expectedMax int    // ожидаемый максимум
+		description string // краткое описание кейса
+	}{
+		{"несколько элементов", []int{2, 7, 4, 5, 9}, 9, "поиск максимума в слайсе среди рандом чисел"},
+		{"один элемент", []int{33}, 33, "максимум в слайсе с однмим элементом"},
+		{"пустой слайс", []int{}, 0, "Обработка пустого слайса"},
+		{"отрицательные числа", []int{-2, -5, -12}, -2, "поиск максимума среди отрицательных чисел"},
+		{"одинаковые элементы", []int{4, 4, 4, 4}, 4, "поиск максимума среди одинаковых элементов"},
 	}
 
-	// один элемент
-	testData2 := []int{33}
-	max = maximum(testData2)
-	if max != 33 {
-		t.Errorf("ожидаемый максимум %d неверный", max)
-	}
+	// перебираем все тестовые случаи
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// создаём локальный объект
+			assert := assert.New(t)
 
-	// отрицательные числа
-	testData3 := []int{-2, -5, -12}
-	max = maximum(testData3)
-	if max != -2 {
-		t.Errorf("ожидаемый максимум %d неверный", max)
-	}
+			// вызов тестовой функции
+			max := maximum(tc.testData)
 
-	// пустой слайс
-	testData4 := []int{}
-	max = maximum(testData4)
-	if max != 0 {
-		t.Errorf("тест работает неисправно, возвращая результат %d", max)
-	}
-
-	// одинаковые элементы
-	testData5 := []int{4, 4, 4, 4}
-	max = maximum(testData5)
-	if max != 4 {
-		t.Errorf("ожидаемый максимум %d неверный", max)
+			// проверяем результат
+			assert.Equal(tc.expectedMax, max, tc.description)
+		})
 	}
 }

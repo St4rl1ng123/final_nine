@@ -17,7 +17,7 @@ func generateRandomElements(size int) []int {
 	// ваш код здесь
 	// если размер слайса 0, вернёт пустой слайс
 	if size <= 0 {
-		return []int{}
+		return nil
 	}
 
 	//инициализация генератора слуачайных чисел
@@ -27,7 +27,8 @@ func generateRandomElements(size int) []int {
 	data := make([]int, size)
 	// заполняем слайс
 	for i := range data {
-		data[i] = localRand.Intn(1000000)
+		data[i] = localRand.Int()
+		data[i] %= SIZE
 	}
 
 	return data
@@ -90,12 +91,7 @@ func maxChunks(data []int) int {
 			defer wg.Done() // лучшее применение
 
 			// находим максимум
-			max := chunkData[0]
-			for _, val := range chunkData[1:] {
-				if val > max {
-					max = val
-				}
-			}
+			max := maximum(chunkData)
 
 			// save this
 			maxValues[chunkIndex] = max
