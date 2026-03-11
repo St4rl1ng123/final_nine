@@ -90,29 +90,19 @@ func maxChunks(data []int) int {
 		go func(chunkIndex int, chunkData []int) {
 			defer wg.Done() // лучшее применение
 
-			// находим максимум
-			max := maximum(chunkData)
-
 			// save this
-			maxValues[chunkIndex] = max
+			maxValues[chunkIndex] = maximum(chunkData)
 		}(i, data[start:end])
 	}
 
 	wg.Wait() // ждём завершение
 
 	// находим макс среди максов
-	finalMax := maxValues[0]
-	for _, val := range maxValues[1:] {
-		if val > finalMax {
-			finalMax = val
-		}
-	}
-
-	return finalMax
+	return maximum(maxValues)
 }
 
 func main() {
-	fmt.Printf("Генерируем %d целых чисел", SIZE)
+	fmt.Printf("Генерируем %d целых чисел\n", SIZE)
 	// ваш код здесь
 	data := generateRandomElements(SIZE)
 	if len(data) == 0 {
@@ -131,7 +121,7 @@ func main() {
 
 	fmt.Printf("Максимальное значение элемента: %d\nВремя поиска: %d ms\n", maxSeq, elapsedSeq)
 
-	fmt.Printf("Ищем максимальное значение в %d потоков", CHUNKS)
+	fmt.Printf("Ищем максимальное значение в %d потоков\n", CHUNKS)
 	// ваш код здесь
 	startChunks := time.Now() // замеряем время для горутин
 	maxCh := maxChunks(data)
